@@ -1,6 +1,6 @@
 "use client";
-import React, { useState, useCallback } from 'react';
-import { DefaultNode, Graph } from '@visx/network';
+import React, { useState, useCallback } from "react";
+import { DefaultNode, Graph } from "@visx/network";
 
 interface CustomNode {
   x: number;
@@ -16,9 +16,9 @@ interface CustomLink {
 }
 
 const initialNodes: CustomNode[] = [
-  { id: 1, x: 50, y: 20, color: '#f4d03f' },
-  { id: 2, x: 200, y: 250, color: '#c39bd3' },
-  { id: 3, x: 300, y: 40, color: '#26deb0' },
+  { id: 1, x: 50, y: 20, color: "#f4d03f" },
+  { id: 2, x: 200, y: 250, color: "#c39bd3" },
+  { id: 3, x: 300, y: 40, color: "#26deb0" },
 ];
 
 const initialLinks: CustomLink[] = [
@@ -27,24 +27,24 @@ const initialLinks: CustomLink[] = [
   { source: initialNodes[2], target: initialNodes[0], dashed: true },
 ];
 
-const background = '#272b4d';
+const background = "#272b4d";
 
 export default function Example() {
   const [nodes, setNodes] = useState<CustomNode[]>(initialNodes);
   const [draggingNodeId, setDraggingNodeId] = useState<number | null>(null);
   const [offset, setOffset] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
 
-  // Handle mousedown to start dragging
-  const handleMouseDown = (event: React.MouseEvent, nodeId: number) => {
+  const handlePointerDown = (event: React.PointerEvent, nodeId: number) => {
+    event.preventDefault(); // Prevent default behavior (especially for mobile)
     const { clientX, clientY } = event;
-    setDraggingNodeId(nodeId); // Set the node that is being dragged
+    setDraggingNodeId(nodeId);
     setOffset({ x: clientX, y: clientY });
   };
 
-  // Handle mousemove to update node position while dragging
-  const handleMouseMove = useCallback(
-    (event: MouseEvent) => {
-      if (draggingNodeId === null) return; // No node is being dragged
+  
+  const handlePointerMove = useCallback(
+    (event: PointerEvent) => {
+      if (draggingNodeId === null) return;
       const { clientX, clientY } = event;
       const dx = clientX - offset.x;
       const dy = clientY - offset.y;
@@ -57,31 +57,31 @@ export default function Example() {
         )
       );
 
-      setOffset({ x: clientX, y: clientY }); // Update the offset to track the new position
+      setOffset({ x: clientX, y: clientY }); 
     },
     [draggingNodeId, offset]
   );
 
-  // Handle mouseup to stop dragging
-  const handleMouseUp = () => {
-    setDraggingNodeId(null); // Stop dragging
+  
+  const handlePointerUp = () => {
+    setDraggingNodeId(null); 
   };
 
-  // Attach mousemove and mouseup events to the window
+ 
   React.useEffect(() => {
     if (draggingNodeId !== null) {
-      window.addEventListener('mousemove', handleMouseMove);
-      window.addEventListener('mouseup', handleMouseUp);
+      window.addEventListener("pointermove", handlePointerMove);
+      window.addEventListener("pointerup", handlePointerUp);
     } else {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', handleMouseUp);
+      window.removeEventListener("pointermove", handlePointerMove);
+      window.removeEventListener("pointerup", handlePointerUp);
     }
 
     return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', handleMouseUp);
+      window.removeEventListener("pointermove", handlePointerMove);
+      window.removeEventListener("pointerup", handlePointerUp);
     };
-  }, [draggingNodeId, handleMouseMove]);
+  }, [draggingNodeId, handlePointerMove]);
 
   const links: CustomLink[] = initialLinks.map((link) => ({
     ...link,
@@ -91,8 +91,12 @@ export default function Example() {
 
   const graph = { nodes, links };
 
-  return 1200 < 10 ? null : (
-    <svg width={"100%"} height={1000}>
+  return (
+    <svg
+      width={"100%"}
+      height={1000}
+      style={{ touchAction: "none" }} 
+    >
       <rect width={"100%"} height={1000} fill={background} />
       <Graph<CustomLink, CustomNode>
         graph={graph}
@@ -100,10 +104,10 @@ export default function Example() {
         left={100}
         nodeComponent={({ node }) => (
           <g
-            onMouseDown={(e) => handleMouseDown(e, node.id)} // Trigger mousedown to start dragging
-            style={{ cursor: 'pointer' }}
+            onPointerDown={(e) => handlePointerDown(e, node.id)} 
+            style={{ cursor: "pointer" }}
           >
-            <DefaultNode fill={node.color || '#999'} />
+            <DefaultNode fill={node.color || "#999"} />
           </g>
         )}
         linkComponent={({ link: { source, target, dashed } }) => (
@@ -115,10 +119,11 @@ export default function Example() {
             strokeWidth={2}
             stroke="#999"
             strokeOpacity={0.9}
-            strokeDasharray={dashed ? '8,4' : undefined}
+            strokeDasharray={dashed ? "8,4" : undefined}
           />
         )}
       />
     </svg>
   );
 }
+
