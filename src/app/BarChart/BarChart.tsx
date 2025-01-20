@@ -2,11 +2,11 @@
 import React, { useRef, useEffect } from "react";
 import * as d3 from "d3";
 
-interface BarChartProps {
+export type BarChartProps = {
     data: number[];
 }
 
-const BarChart: React.FC<BarChartProps> = ({ data }) => {
+export const  BarChart: React.FC<BarChartProps> = ({ data }) => {
     const svgRef = useRef<SVGSVGElement | null>(null);
 
 
@@ -66,4 +66,4 @@ const BarChart: React.FC<BarChartProps> = ({ data }) => {
 }
 
 
-export default BarChart
+// export default BarChart
